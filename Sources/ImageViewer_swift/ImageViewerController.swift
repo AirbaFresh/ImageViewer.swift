@@ -97,7 +97,6 @@ UIGestureRecognizerDelegate {
         default:
             break
         }
-        
         addGestureRecognizers()
     }
     
@@ -108,7 +107,7 @@ UIGestureRecognizerDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.navBar?.alpha = 0.0
+//        self.navBar?.alpha = 0.0
     }
     
     override func viewWillLayoutSubviews() {
@@ -237,7 +236,7 @@ extension ImageViewerController {
         scrollView.minimumZoomScale = minScale
         scrollView.zoomScale = minScale
         maxZoomScale = maxScale
-        scrollView.maximumZoomScale = maxZoomScale * 1.1
+        scrollView.maximumZoomScale = maxZoomScale * 5.1
     }
     
     

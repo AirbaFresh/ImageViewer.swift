@@ -8,6 +8,7 @@ extension UIImageView {
         var imageDatasource:ImageDataSource?
         var imageLoader:ImageLoader?
         var initialIndex:Int = 0
+        var imagesCount:Int = 0
         var options:[ImageViewerOption] = []
     }
     
@@ -70,6 +71,7 @@ extension UIImageView {
     public func setupImageViewer(
         urls:[URL],
         initialIndex:Int = 0,
+        imagesCount:Int = 0,
         options:[ImageViewerOption] = [],
         placeholder: UIImage? = nil,
         from:UIViewController? = nil,
@@ -82,6 +84,7 @@ extension UIImageView {
         setup(
             datasource: datasource,
             initialIndex: initialIndex,
+            imagesCount: imagesCount,
             options: options,
             from: from,
             imageLoader: imageLoader)
@@ -105,6 +108,7 @@ extension UIImageView {
     private func setup(
         datasource:ImageDataSource?,
         initialIndex:Int = 0,
+        imagesCount:Int = 0,
         options:[ImageViewerOption] = [],
         from: UIViewController? = nil,
         imageLoader:ImageLoader? = nil) {
@@ -142,6 +146,7 @@ extension UIImageView {
         _tapRecognizer!.imageDatasource = datasource
         _tapRecognizer!.imageLoader = imageLoader
         _tapRecognizer!.initialIndex = initialIndex
+        _tapRecognizer!.imagesCount = imagesCount
         _tapRecognizer!.options = options
         _tapRecognizer!.from = from
         addGestureRecognizer(_tapRecognizer!)
@@ -155,7 +160,8 @@ extension UIImageView {
             imageDataSource: sender.imageDatasource,
             imageLoader: sender.imageLoader ?? URLSessionImageLoader(),
             options: sender.options,
-            initialIndex: sender.initialIndex)
+            initialIndex: sender.initialIndex,
+            imagesCount: sender.imagesCount)
         let presentFromVC = sender.from ?? vc
         presentFromVC?.present(imageCarousel, animated: true)
     }

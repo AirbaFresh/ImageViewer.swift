@@ -27,6 +27,14 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
  
     var initialIndex = 0
     
+    var imagesCount = 0
+    
+    var currentPage = 0 {
+        didSet {
+            navItem.title = "\(currentPage + 1) из \(imagesCount)"
+        }
+    }
+        
     var theme:ImageViewerTheme = .light {
         didSet {
             navItem.leftBarButtonItem?.tintColor = theme.tintColor
@@ -63,13 +71,15 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
         imageDataSource: ImageDataSource?,
         imageLoader: ImageLoader,
         options:[ImageViewerOption] = [],
-        initialIndex:Int = 0) {
+        initialIndex:Int = 0,
+        imagesCount: Int) {
         
         self.initialSourceView = sourceView
         self.initialIndex = initialIndex
         self.options = options
         self.imageDatasource = imageDataSource
         self.imageLoader = imageLoader
+        self.imagesCount = imagesCount
         let pageOptions = [UIPageViewController.OptionsKey.interPageSpacing: 20]
         
         var _imageContentMode = imageContentMode
@@ -105,12 +115,13 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
             style: .plain,
             target: self,
             action: #selector(dismiss(_:)))
-        
-        navItem.leftBarButtonItem = closeBarButton
-        navItem.leftBarButtonItem?.tintColor = theme.tintColor
+
+        navItem.rightBarButtonItem = closeBarButton
+        navItem.rightBarButtonItem?.tintColor = theme.tintColor
         navBar.alpha = 0.0
         navBar.items = [navItem]
         navBar.insert(to: view)
+        navItem.title = "\(initialIndex + 1) из \(imagesCount)"
     }
     
     private func addBackgroundView() {
@@ -124,26 +135,13 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
         
         options.forEach {
             switch $0 {
-                case .theme(let theme):
-                    self.theme = theme
-                case .contentMode(let contentMode):
-                    self.imageContentMode = contentMode
-                case .closeIcon(let icon):
-                    navItem.leftBarButtonItem?.image = icon
-                case .rightNavItemTitle(let title, let onTap):
-                    navItem.rightBarButtonItem = UIBarButtonItem(
-                        title: title,
-                        style: .plain,
-                        target: self,
-                        action: #selector(diTapRightNavBarItem(_:)))
-                    onRightNavBarTapped = onTap
-                case .rightNavItemIcon(let icon, let onTap):
-                    navItem.rightBarButtonItem = UIBarButtonItem(
-                        image: icon,
-                        style: .plain,
-                        target: self,
-                        action: #selector(diTapRightNavBarItem(_:)))
-                    onRightNavBarTapped = onTap
+            case .theme(let theme):
+                self.theme = theme
+            case .contentMode(let contentMode):
+                self.imageContentMode = contentMode
+            case .closeIcon(let icon):
+                navItem.rightBarButtonItem?.image = icon
+            break
             }
         }
     }
@@ -156,6 +154,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
         applyOptions()
         
         dataSource = self
+        delegate = self
 
         if let imageDatasource = imageDatasource {
             let initialVC:ImageViewerController = .init(
@@ -191,7 +190,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
     }
 }
 
-extension ImageCarouselViewController:UIPageViewControllerDataSource {
+extension ImageCarouselViewController:UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     public func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController) -> UIViewController? {
@@ -220,5 +219,14 @@ extension ImageCarouselViewController:UIPageViewControllerDataSource {
             index: newIndex,
             imageItem: imageDatasource.imageItem(at: newIndex),
             imageLoader: vc.imageLoader)
+    }
+    
+    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        
+        guard finished, let currentPageController = pageViewController.viewControllers?.last as? ImageViewerController else {
+            return
+        }
+        
+        self.currentPage = currentPageController.index
     }
 }
