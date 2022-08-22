@@ -110,8 +110,8 @@ UIGestureRecognizerDelegate {
 //        self.navBar?.alpha = 0.0
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         layout()
     }
     
