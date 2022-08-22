@@ -10,6 +10,7 @@ extension UIImageView {
         var initialIndex:Int = 0
         var imagesCount:Int = 0
         var options:[ImageViewerOption] = []
+        var onPageChanged: ((_ currentPage: Int) -> Void)? = nil
     }
     
     private var vc:UIViewController? {
@@ -75,7 +76,8 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         placeholder: UIImage? = nil,
         from:UIViewController? = nil,
-        imageLoader:ImageLoader? = nil) {
+        imageLoader:ImageLoader? = nil,
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
         
         let datasource = SimpleImageDatasource(
             imageItems: urls.compactMap {
@@ -87,7 +89,8 @@ extension UIImageView {
             imagesCount: imagesCount,
             options: options,
             from: from,
-            imageLoader: imageLoader)
+            imageLoader: imageLoader,
+            onPageChanged: onPageChanged)
     }
     
     public func setupImageViewer(
@@ -111,46 +114,48 @@ extension UIImageView {
         imagesCount:Int = 0,
         options:[ImageViewerOption] = [],
         from: UIViewController? = nil,
-        imageLoader:ImageLoader? = nil) {
-        
-        var _tapRecognizer:TapWithDataRecognizer?
-        gestureRecognizers?.forEach {
-            if let _tr = $0 as? TapWithDataRecognizer {
-                // if found, just use existing
-                _tapRecognizer = _tr
+        imageLoader:ImageLoader? = nil,
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+            
+            var _tapRecognizer:TapWithDataRecognizer?
+            gestureRecognizers?.forEach {
+                if let _tr = $0 as? TapWithDataRecognizer {
+                    // if found, just use existing
+                    _tapRecognizer = _tr
+                }
             }
-        }
-        
-        isUserInteractionEnabled = true
-        
-        var imageContentMode: UIView.ContentMode = .scaleAspectFill
-        options.forEach {
-            switch $0 {
-            case .contentMode(let contentMode):
-                imageContentMode = contentMode
-            default:
-                break
+            
+            isUserInteractionEnabled = true
+            
+            var imageContentMode: UIView.ContentMode = .scaleAspectFill
+            options.forEach {
+                switch $0 {
+                case .contentMode(let contentMode):
+                    imageContentMode = contentMode
+                default:
+                    break
+                }
             }
+            contentMode = imageContentMode
+            
+            clipsToBounds = true
+            
+            if _tapRecognizer == nil {
+                _tapRecognizer = TapWithDataRecognizer(
+                    target: self, action: #selector(showImageViewer(_:)))
+                _tapRecognizer!.numberOfTouchesRequired = 1
+                _tapRecognizer!.numberOfTapsRequired = 1
+            }
+            // Pass the Data
+            _tapRecognizer!.imageDatasource = datasource
+            _tapRecognizer!.imageLoader = imageLoader
+            _tapRecognizer!.initialIndex = initialIndex
+            _tapRecognizer!.imagesCount = imagesCount
+            _tapRecognizer!.options = options
+            _tapRecognizer!.from = from
+            _tapRecognizer!.onPageChanged = onPageChanged
+            addGestureRecognizer(_tapRecognizer!)
         }
-        contentMode = imageContentMode
-        
-        clipsToBounds = true
-        
-        if _tapRecognizer == nil {
-            _tapRecognizer = TapWithDataRecognizer(
-                target: self, action: #selector(showImageViewer(_:)))
-            _tapRecognizer!.numberOfTouchesRequired = 1
-            _tapRecognizer!.numberOfTapsRequired = 1
-        }
-        // Pass the Data
-        _tapRecognizer!.imageDatasource = datasource
-        _tapRecognizer!.imageLoader = imageLoader
-        _tapRecognizer!.initialIndex = initialIndex
-        _tapRecognizer!.imagesCount = imagesCount
-        _tapRecognizer!.options = options
-        _tapRecognizer!.from = from
-        addGestureRecognizer(_tapRecognizer!)
-    }
     
     @objc
     private func showImageViewer(_ sender:TapWithDataRecognizer) {
@@ -161,7 +166,8 @@ extension UIImageView {
             imageLoader: sender.imageLoader ?? URLSessionImageLoader(),
             options: sender.options,
             initialIndex: sender.initialIndex,
-            imagesCount: sender.imagesCount)
+            imagesCount: sender.imagesCount,
+            onPageChanged: sender.onPageChanged)
         let presentFromVC = sender.from ?? vc
         presentFromVC?.present(imageCarousel, animated: true)
     }
