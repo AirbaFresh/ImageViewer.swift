@@ -24,7 +24,9 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
     
     weak var imageDatasource:ImageDataSource?
     let imageLoader:ImageLoader
- 
+    
+    var onPageChanged: ((_ currentPage: Int) -> Void)? = nil
+    
     var initialIndex = 0
     
     var imagesCount = 0
@@ -32,9 +34,10 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
     var currentPage = 0 {
         didSet {
             navItem.title = "\(currentPage + 1) из \(imagesCount)"
+            onPageChanged?(currentPage)
         }
     }
-        
+    
     var theme:ImageViewerTheme = .light {
         didSet {
             navItem.leftBarButtonItem?.tintColor = theme.tintColor
@@ -72,37 +75,39 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
         imageLoader: ImageLoader,
         options:[ImageViewerOption] = [],
         initialIndex:Int = 0,
-        imagesCount: Int) {
-        
-        self.initialSourceView = sourceView
-        self.initialIndex = initialIndex
-        self.options = options
-        self.imageDatasource = imageDataSource
-        self.imageLoader = imageLoader
-        self.imagesCount = imagesCount
-        let pageOptions = [UIPageViewController.OptionsKey.interPageSpacing: 20]
-        
-        var _imageContentMode = imageContentMode
-        options.forEach {
-            switch $0 {
-            case .contentMode(let contentMode):
-                _imageContentMode = contentMode
-            default:
-                break
+        imagesCount: Int,
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+            
+            self.initialSourceView = sourceView
+            self.initialIndex = initialIndex
+            self.options = options
+            self.imageDatasource = imageDataSource
+            self.imageLoader = imageLoader
+            self.imagesCount = imagesCount
+            self.onPageChanged = onPageChanged
+            let pageOptions = [UIPageViewController.OptionsKey.interPageSpacing: 20]
+            
+            var _imageContentMode = imageContentMode
+            options.forEach {
+                switch $0 {
+                case .contentMode(let contentMode):
+                    _imageContentMode = contentMode
+                default:
+                    break
+                }
             }
+            imageContentMode = _imageContentMode
+            
+            self.imageViewerPresentationDelegate = ImageViewerTransitionPresentationManager(imageContentMode: imageContentMode)
+            super.init(
+                transitionStyle: .scroll,
+                navigationOrientation: .horizontal,
+                options: pageOptions)
+            
+            transitioningDelegate = imageViewerPresentationDelegate
+            modalPresentationStyle = .custom
+            modalPresentationCapturesStatusBarAppearance = true
         }
-        imageContentMode = _imageContentMode
-        
-        self.imageViewerPresentationDelegate = ImageViewerTransitionPresentationManager(imageContentMode: imageContentMode)
-        super.init(
-            transitionStyle: .scroll,
-            navigationOrientation: .horizontal,
-            options: pageOptions)
-        
-        transitioningDelegate = imageViewerPresentationDelegate
-        modalPresentationStyle = .custom
-        modalPresentationCapturesStatusBarAppearance = true
-    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -115,7 +120,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
             style: .plain,
             target: self,
             action: #selector(dismiss(_:)))
-
+        
         navItem.rightBarButtonItem = closeBarButton
         navItem.rightBarButtonItem?.tintColor = theme.tintColor
         navBar.alpha = 0.0
@@ -141,7 +146,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
                 self.imageContentMode = contentMode
             case .closeIcon(let icon):
                 navItem.rightBarButtonItem?.image = icon
-            break
+                break
             }
         }
     }
@@ -155,7 +160,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
         
         dataSource = self
         delegate = self
-
+        
         if let imageDatasource = imageDatasource {
             let initialVC:ImageViewerController = .init(
                 index: initialIndex,
@@ -164,7 +169,7 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
             setViewControllers([initialVC], direction: .forward, animated: true)
         }
     }
-
+    
     @objc
     private func dismiss(_ sender:UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
@@ -177,8 +182,8 @@ public class ImageCarouselViewController:UIPageViewController, ImageViewerTransi
     @objc
     func diTapRightNavBarItem(_ sender:UIBarButtonItem) {
         guard let onTap = onRightNavBarTapped,
-            let _firstVC = viewControllers?.first as? ImageViewerController
-            else { return }
+              let _firstVC = viewControllers?.first as? ImageViewerController
+        else { return }
         onTap(_firstVC.index)
     }
     
@@ -194,32 +199,32 @@ extension ImageCarouselViewController:UIPageViewControllerDataSource, UIPageView
     public func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        
-        guard let vc = viewController as? ImageViewerController else { return nil }
-        guard let imageDatasource = imageDatasource else { return nil }
-        guard vc.index > 0 else { return nil }
- 
-        let newIndex = vc.index - 1
-        return ImageViewerController.init(
-            index: newIndex,
-            imageItem:  imageDatasource.imageItem(at: newIndex),
-            imageLoader: vc.imageLoader)
-    }
+            
+            guard let vc = viewController as? ImageViewerController else { return nil }
+            guard let imageDatasource = imageDatasource else { return nil }
+            guard vc.index > 0 else { return nil }
+            
+            let newIndex = vc.index - 1
+            return ImageViewerController.init(
+                index: newIndex,
+                imageItem:  imageDatasource.imageItem(at: newIndex),
+                imageLoader: vc.imageLoader)
+        }
     
     public func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        
-        guard let vc = viewController as? ImageViewerController else { return nil }
-        guard let imageDatasource = imageDatasource else { return nil }
-        guard vc.index <= (imageDatasource.numberOfImages() - 2) else { return nil }
-        
-        let newIndex = vc.index + 1
-        return ImageViewerController.init(
-            index: newIndex,
-            imageItem: imageDatasource.imageItem(at: newIndex),
-            imageLoader: vc.imageLoader)
-    }
+            
+            guard let vc = viewController as? ImageViewerController else { return nil }
+            guard let imageDatasource = imageDatasource else { return nil }
+            guard vc.index <= (imageDatasource.numberOfImages() - 2) else { return nil }
+            
+            let newIndex = vc.index + 1
+            return ImageViewerController.init(
+                index: newIndex,
+                imageItem: imageDatasource.imageItem(at: newIndex),
+                imageLoader: vc.imageLoader)
+        }
     
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
