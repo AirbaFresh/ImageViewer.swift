@@ -93,14 +93,7 @@ extension WithURLsViewController:UICollectionViewDataSource {
         cell.imageView.setupImageViewer(
             urls: Data.imageUrls,
             initialIndex: indexPath.item,
-            options: [
-                .theme(.dark),
-                .rightNavItemTitle("Info", onTap: { i in
-                    print("TAPPED", i)
-                })
-            ],
             from: self)
-        
         return cell
     }
 }

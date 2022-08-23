@@ -15,7 +15,7 @@ extension UIImageView {
     
     private var vc:UIViewController? {
         guard let rootVC = UIApplication.shared.keyWindow?.rootViewController
-            else { return nil }
+        else { return nil }
         return rootVC.presentedViewController != nil ? rootVC.presentedViewController : rootVC
     }
     
@@ -23,13 +23,13 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil) {
-        setup(
-            datasource: SimpleImageDatasource(imageItems: [.image(image)]),
-            options: options,
-            from: from,
-            imageLoader: imageLoader)
-    }
-
+            setup(
+                datasource: SimpleImageDatasource(imageItems: [.image(image)]),
+                options: options,
+                from: from,
+                imageLoader: imageLoader)
+        }
+    
     public func setupImageViewer(
         url:URL,
         initialIndex:Int = 0,
@@ -37,18 +37,18 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil) {
-        
-        let datasource = SimpleImageDatasource(
-            imageItems: [url].compactMap {
-                ImageItem.url($0, placeholder: placeholder)
-        })
-        setup(
-            datasource: datasource,
-            initialIndex: initialIndex,
-            options: options,
-            from: from,
-            imageLoader: imageLoader)
-    }
+            
+            let datasource = SimpleImageDatasource(
+                imageItems: [url].compactMap {
+                    ImageItem.url($0, placeholder: placeholder)
+                })
+            setup(
+                datasource: datasource,
+                initialIndex: initialIndex,
+                options: options,
+                from: from,
+                imageLoader: imageLoader)
+        }
     
     public func setupImageViewer(
         images:[UIImage],
@@ -56,19 +56,19 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil) {
-        
-        let datasource = SimpleImageDatasource(
-            imageItems: images.compactMap {
-                ImageItem.image($0)
-        })
-        setup(
-            datasource: datasource,
-            initialIndex: initialIndex,
-            options: options,
-            from: from,
-            imageLoader: imageLoader)
-    }
-
+            
+            let datasource = SimpleImageDatasource(
+                imageItems: images.compactMap {
+                    ImageItem.image($0)
+                })
+            setup(
+                datasource: datasource,
+                initialIndex: initialIndex,
+                options: options,
+                from: from,
+                imageLoader: imageLoader)
+        }
+    
     public func setupImageViewer(
         urls:[URL],
         initialIndex:Int = 0,
@@ -78,20 +78,20 @@ extension UIImageView {
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil,
         onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
-        
-        let datasource = SimpleImageDatasource(
-            imageItems: urls.compactMap {
-                ImageItem.url($0, placeholder: placeholder)
-        })
-        setup(
-            datasource: datasource,
-            initialIndex: initialIndex,
-            imagesCount: imagesCount,
-            options: options,
-            from: from,
-            imageLoader: imageLoader,
-            onPageChanged: onPageChanged)
-    }
+            
+            let datasource = SimpleImageDatasource(
+                imageItems: urls.compactMap {
+                    ImageItem.url($0, placeholder: placeholder)
+                })
+            setup(
+                datasource: datasource,
+                initialIndex: initialIndex,
+                imagesCount: imagesCount,
+                options: options,
+                from: from,
+                imageLoader: imageLoader,
+                onPageChanged: onPageChanged)
+        }
     
     public func setupImageViewer(
         datasource:ImageDataSource,
@@ -99,14 +99,14 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil) {
-        
-        setup(
-            datasource: datasource,
-            initialIndex: initialIndex,
-            options: options,
-            from: from,
-            imageLoader: imageLoader)
-    }
+            
+            setup(
+                datasource: datasource,
+                initialIndex: initialIndex,
+                options: options,
+                from: from,
+                imageLoader: imageLoader)
+        }
     
     private func setup(
         datasource:ImageDataSource?,
@@ -160,15 +160,27 @@ extension UIImageView {
     @objc
     private func showImageViewer(_ sender:TapWithDataRecognizer) {
         guard let sourceView = sender.view as? UIImageView else { return }
+        
         let imageCarousel = ImageCarouselViewController.init(
             sourceView: sourceView,
             imageDataSource: sender.imageDatasource,
-            imageLoader: sender.imageLoader ?? URLSessionImageLoader(),
+            imageLoader: sender.imageLoader ?? configureImageLoader(),
             options: sender.options,
             initialIndex: sender.initialIndex,
             imagesCount: sender.imagesCount,
             onPageChanged: sender.onPageChanged)
         let presentFromVC = sender.from ?? vc
         presentFromVC?.present(imageCarousel, animated: true)
+    }
+    
+    private func configureImageLoader() -> ImageLoader {
+        
+        var imageLoader: ImageLoader
+#if canImport(SDWebImage)
+        imageLoader = SDWebImageLoader()
+#else
+        imageLoader = URLSessionImageLoader()
+#endif
+        return imageLoader
     }
 }
