@@ -108,12 +108,12 @@ UIGestureRecognizerDelegate {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         layout()
-        view.setNeedsLayout()
     }
 
     private func layout() {
         updateConstraintsForSize(view.bounds.size)
         updateMinMaxZoomScaleForSize(view.bounds.size)
+        view.setNeedsLayout()
     }
     
     // MARK: Add Gesture Recognizers
