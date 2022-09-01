@@ -104,20 +104,16 @@ UIGestureRecognizerDelegate {
         super.viewDidAppear(animated)
         self.navBar?.alpha = 1.0
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-//        self.navBar?.alpha = 0.0
-    }
-    
+
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         layout()
     }
-    
+
     private func layout() {
         updateConstraintsForSize(view.bounds.size)
         updateMinMaxZoomScaleForSize(view.bounds.size)
+        view.setNeedsLayout()
     }
     
     // MARK: Add Gesture Recognizers
