@@ -176,8 +176,8 @@ extension UIImageView {
     private func configureImageLoader() -> ImageLoader {
         
         var imageLoader: ImageLoader
-#if canImport(SDWebImage)
-        imageLoader = SDWebImageLoader()
+#if canImport(Kingfisher)
+        imageLoader = KingfisherImageLoader()
 #else
         imageLoader = URLSessionImageLoader()
 #endif
