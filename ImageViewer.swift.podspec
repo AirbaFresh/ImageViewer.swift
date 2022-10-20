@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   }
   s.source_files = 'Sources/ImageViewer_swift/*'
   s.requires_arc = true
-  s.ios.deployment_target  = '10.0'
+  s.ios.deployment_target  = '12.0'
   s.swift_versions = ['4.0','4.2','5.0']
   s.license = {
     :type => 'MIT',
@@ -28,6 +28,6 @@ LICENSE
   
   s.default_subspecs = :none
   s.subspec 'Fetcher' do |cs|
-    cs.dependency 'SDWebImage'
+    cs.dependency 'Kingfisher', '~> 7.0'
   end
 end
