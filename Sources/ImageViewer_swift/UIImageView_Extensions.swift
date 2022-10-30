@@ -77,7 +77,8 @@ extension UIImageView {
         placeholder: UIImage? = nil,
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil,
-        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil,
+        onTap: (() -> Void)? = nil) {
             
             let datasource = SimpleImageDatasource(
                 imageItems: urls.compactMap {
@@ -115,7 +116,8 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from: UIViewController? = nil,
         imageLoader:ImageLoader? = nil,
-        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil,
+        onTap: (() -> Void)? = nil) {
             
             var _tapRecognizer:TapWithDataRecognizer?
             gestureRecognizers?.forEach {
@@ -142,7 +144,7 @@ extension UIImageView {
             
             if _tapRecognizer == nil {
                 _tapRecognizer = TapWithDataRecognizer(
-                    target: self, action: #selector(showImageViewer(_:)))
+                    target: self, action: #selector(showImageViewer(_:onTap:)))
                 _tapRecognizer!.numberOfTouchesRequired = 1
                 _tapRecognizer!.numberOfTapsRequired = 1
             }
@@ -158,9 +160,9 @@ extension UIImageView {
         }
     
     @objc
-    private func showImageViewer(_ sender:TapWithDataRecognizer) {
+    private func showImageViewer(_ sender:TapWithDataRecognizer, onTap: (() -> Void)? = nil) {
         guard let sourceView = sender.view as? UIImageView else { return }
-        
+        onTap?()
         let imageCarousel = ImageCarouselViewController.init(
             sourceView: sourceView,
             imageDataSource: sender.imageDatasource,
