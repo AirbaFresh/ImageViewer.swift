@@ -11,6 +11,7 @@ extension UIImageView {
         var imagesCount:Int = 0
         var options:[ImageViewerOption] = []
         var onPageChanged: ((_ currentPage: Int) -> Void)? = nil
+        var onTap: (() -> Void)? = nil
     }
     
     private var vc:UIViewController? {
@@ -145,7 +146,7 @@ extension UIImageView {
             
             if _tapRecognizer == nil {
                 _tapRecognizer = TapWithDataRecognizer(
-                    target: self, action: #selector(showImageViewer(_:onTap:)))
+                    target: self, action: #selector(showImageViewer(_:)))
                 _tapRecognizer!.numberOfTouchesRequired = 1
                 _tapRecognizer!.numberOfTapsRequired = 1
             }
@@ -157,13 +158,14 @@ extension UIImageView {
             _tapRecognizer!.options = options
             _tapRecognizer!.from = from
             _tapRecognizer!.onPageChanged = onPageChanged
+            _tapRecognizer?.onTap = onTap
             addGestureRecognizer(_tapRecognizer!)
         }
     
     @objc
-    private func showImageViewer(_ sender:TapWithDataRecognizer, onTap: (() -> Void)? = nil) {
+    private func showImageViewer(_ sender:TapWithDataRecognizer) {
         guard let sourceView = sender.view as? UIImageView else { return }
-        onTap?()
+        sender.onTap?()
         let imageCarousel = ImageCarouselViewController.init(
             sourceView: sourceView,
             imageDataSource: sender.imageDatasource,
