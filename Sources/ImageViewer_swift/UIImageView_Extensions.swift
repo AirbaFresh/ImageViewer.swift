@@ -91,7 +91,8 @@ extension UIImageView {
                 options: options,
                 from: from,
                 imageLoader: imageLoader,
-                onPageChanged: onPageChanged)
+                onPageChanged: onPageChanged,
+                onTap: onTap)
         }
     
     public func setupImageViewer(
