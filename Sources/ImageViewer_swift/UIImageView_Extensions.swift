@@ -11,6 +11,7 @@ extension UIImageView {
         var imagesCount:Int = 0
         var options:[ImageViewerOption] = []
         var onPageChanged: ((_ currentPage: Int) -> Void)? = nil
+        var onTap: (() -> Void)? = nil
     }
     
     private var vc:UIViewController? {
@@ -77,7 +78,8 @@ extension UIImageView {
         placeholder: UIImage? = nil,
         from:UIViewController? = nil,
         imageLoader:ImageLoader? = nil,
-        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil,
+        onTap: (() -> Void)? = nil) {
             
             let datasource = SimpleImageDatasource(
                 imageItems: urls.compactMap {
@@ -90,7 +92,8 @@ extension UIImageView {
                 options: options,
                 from: from,
                 imageLoader: imageLoader,
-                onPageChanged: onPageChanged)
+                onPageChanged: onPageChanged,
+                onTap: onTap)
         }
     
     public func setupImageViewer(
@@ -115,7 +118,8 @@ extension UIImageView {
         options:[ImageViewerOption] = [],
         from: UIViewController? = nil,
         imageLoader:ImageLoader? = nil,
-        onPageChanged: ((_ currentPage: Int) -> Void)? = nil) {
+        onPageChanged: ((_ currentPage: Int) -> Void)? = nil,
+        onTap: (() -> Void)? = nil) {
             
             var _tapRecognizer:TapWithDataRecognizer?
             gestureRecognizers?.forEach {
@@ -154,13 +158,14 @@ extension UIImageView {
             _tapRecognizer!.options = options
             _tapRecognizer!.from = from
             _tapRecognizer!.onPageChanged = onPageChanged
+            _tapRecognizer?.onTap = onTap
             addGestureRecognizer(_tapRecognizer!)
         }
     
     @objc
     private func showImageViewer(_ sender:TapWithDataRecognizer) {
         guard let sourceView = sender.view as? UIImageView else { return }
-        
+        sender.onTap?()
         let imageCarousel = ImageCarouselViewController.init(
             sourceView: sourceView,
             imageDataSource: sender.imageDatasource,
