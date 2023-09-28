@@ -2,7 +2,7 @@ PODS:
   - ImageViewer.swift (3.0)
   - ImageViewer.swift/Fetcher (3.0):
     - Kingfisher (~> 7.0)
-  - Kingfisher (7.4.0)
+  - Kingfisher (7.9.1)
 
 DEPENDENCIES:
   - ImageViewer.swift (from `./../`)
@@ -18,8 +18,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ImageViewer.swift: d094c98e0552b0b06bf48977cff3f3831648baeb
-  Kingfisher: 596b207973051aae5e4c54a1c1cb39837ea10d36
+  Kingfisher: 1d14e9f59cbe19389f591c929000332bf70efd32
 
 PODFILE CHECKSUM: abb74e0522ce64243531012644f91b2b3105a5d5
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
