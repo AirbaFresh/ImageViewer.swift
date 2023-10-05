@@ -25,9 +25,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 LICENSE
   }
-  
-  s.default_subspecs = :none
-  s.subspec 'Fetcher' do |cs|
-    cs.dependency 'Kingfisher', '~> 7.0'
-  end
 end

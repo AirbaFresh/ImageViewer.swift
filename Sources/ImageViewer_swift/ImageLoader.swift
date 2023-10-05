@@ -1,6 +1,6 @@
 import Foundation
-#if canImport(Kingfisher)
-import Kingfisher
+#if canImport(SDWebImage)
+import SDWebImage
 #endif
 
 public protocol ImageLoader {
@@ -29,20 +29,18 @@ public struct URLSessionImageLoader: ImageLoader {
     }
 }
 
-#if canImport(Kingfisher)
-struct KingfisherImageLoader: ImageLoader {
+#if canImport(SDWebImage)
+struct SDWebImageLoader: ImageLoader {
     func loadImage(_ url: URL, placeholder: UIImage?, imageView: UIImageView, completion: @escaping (UIImage?) -> Void) {
-        imageView.kf.setImage(with: url, placeholder: placeholder) { result in
-            switch result {
-            case .success(let result):
-                UIView.setAnimationsEnabled(false)
-                completion(result.image)
-                UIView.setAnimationsEnabled(true)
-            case .failure:
-                completion(nil)
+        imageView.sd_setImage(
+            with: url,
+            placeholderImage: placeholder,
+            options: [],
+            progress: nil) {(img, err, type, url) in
+                DispatchQueue.main.async {
+                    completion(img)
+                }
             }
-            completion(nil)
-        }
     }
 }
 #endif
