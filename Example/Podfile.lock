@@ -1,16 +1,27 @@
 PODS:
   - ImageViewer.swift (3.0)
+  - ImageViewer.swift/Fetcher (3.0):
+    - SDWebImage
+  - SDWebImage (5.18.2):
+    - SDWebImage/Core (= 5.18.2)
+  - SDWebImage/Core (5.18.2)
 
 DEPENDENCIES:
   - ImageViewer.swift (from `./../`)
+  - ImageViewer.swift/Fetcher (from `./../`)
+
+SPEC REPOS:
+  trunk:
+    - SDWebImage
 
 EXTERNAL SOURCES:
   ImageViewer.swift:
     :path: "./../"
 
 SPEC CHECKSUMS:
-  ImageViewer.swift: 7e82ce918d3d3cdd292b4b85141032c204e7b54b
+  ImageViewer.swift: b3817cc3a385be3b1e9b7b17fd6246f81a8f371c
+  SDWebImage: c0de394d7cf7f9838aed1fd6bb6037654a4572e4
 
-PODFILE CHECKSUM: cb1384c9cd0f103f3bcbb12f193727099811e09b
+PODFILE CHECKSUM: abb74e0522ce64243531012644f91b2b3105a5d5
 
 COCOAPODS: 1.12.1
