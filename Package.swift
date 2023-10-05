@@ -19,7 +19,7 @@ let package = Package(
 	targets: [
 		.target(
 			name: "ImageViewer_swift",
-			dependencies: ["SDWebImage", "SDWebImageSwiftUI"],
+			dependencies: ["SDWebImage", "SDWebImageSwiftUI", "Kingfisher"],
             path: "Sources/ImageViewer_swift")
 	]
 )
