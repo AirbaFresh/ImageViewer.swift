@@ -13,7 +13,8 @@ let package = Package(
 	],
     dependencies: [
         .package(url: "https://github.com/SDWebImage/SDWebImage", .upToNextMajor(from: "5.11.0")),
-        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "2.0.0"))
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "2.0.0"))
     ],
 	targets: [
 		.target(

@@ -29,5 +29,7 @@ LICENSE
   s.default_subspecs = :none
   s.subspec 'Fetcher' do |cs|
     cs.dependency 'SDWebImage'
+    cs.dependency 'SDWebImageSwiftUI'
+    cs.dependency 'Kingfisher'
   end
 end
