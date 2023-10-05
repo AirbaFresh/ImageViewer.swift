@@ -1,6 +1,6 @@
 import UIKit
 import ImageViewer_swift
-import Kingfisher
+import SDWebImage
 
 class WithURLsViewController:UIViewController {
     
@@ -45,7 +45,7 @@ class WithURLsViewController:UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Gallery"
-        ImageCache.default.clearMemoryCache()
+        SDImageCache.shared.clear(with: .all, completion: nil)
     }
     
     override func viewWillLayoutSubviews() {
