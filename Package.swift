@@ -13,13 +13,12 @@ let package = Package(
 	],
     dependencies: [
         .package(url: "https://github.com/SDWebImage/SDWebImage", .upToNextMajor(from: "5.11.0")),
-        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "2.0.0")),
-        .package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.9.1"))
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "2.0.0"))
     ],
 	targets: [
 		.target(
 			name: "ImageViewer_swift",
-			dependencies: ["SDWebImage", "SDWebImageSwiftUI", "Kingfisher"],
+			dependencies: ["SDWebImage", "SDWebImageSwiftUI"],
             path: "Sources/ImageViewer_swift")
 	]
 )
