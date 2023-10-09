@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "ImageViewer_swift",
 	platforms: [
-		.iOS(.v10)
+		.iOS(.v14)
 	],
     products: [
         .library(
@@ -13,11 +13,12 @@ let package = Package(
 	],
     dependencies: [
         .package(url: "https://github.com/SDWebImage/SDWebImage", .upToNextMajor(from: "5.11.0")),
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI", .upToNextMajor(from: "2.0.0"))
     ],
 	targets: [
 		.target(
 			name: "ImageViewer_swift",
-			dependencies: ["SDWebImage"],
-			path: "Sources/ImageViewer_swift")
+			dependencies: ["SDWebImage", "SDWebImageSwiftUI"],
+            path: "Sources/ImageViewer_swift")
 	]
 )
